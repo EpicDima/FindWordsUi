@@ -12,6 +12,8 @@ repositories {
 }
 
 dependencies {
+    implementation(project(":core"))
+
     // Note, if you develop a library, you should use compose.desktop.common.
     // compose.desktop.currentOs should be used in launcher-sourceSet
     // (in a separate module for demo project and in testMain).
