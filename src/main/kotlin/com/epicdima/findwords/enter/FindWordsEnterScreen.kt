@@ -29,11 +29,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 
 @Composable
-fun FindWordsEnterScreen(
-    viewModel: FindWordsEnterViewModel,
-    goBack: () -> Unit,
-    openSolveScreen: () -> Unit
-) {
+fun FindWordsEnterScreen(viewModel: FindWordsEnterViewModel) {
     val uiState by viewModel.uiStateFlow.collectAsState()
     FindWordsEnterScreen(uiState, viewModel::doAction)
 }

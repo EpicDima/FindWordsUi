@@ -1,10 +1,14 @@
 package com.epicdima.findwords.enter
 
+import com.epicdima.findwords.base.ViewModel
+import com.epicdima.findwords.common.FindWordsSolutionParameters
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 
-class FindWordsEnterViewModel {
+class FindWordsEnterViewModel(
+    private val openSolveScreen: (FindWordsSolutionParameters) -> Unit
+) : ViewModel() {
 
     private val _uiStateFlow: MutableStateFlow<FindWordsEnterUiState> = MutableStateFlow(
         FindWordsEnterUiState(
@@ -53,7 +57,16 @@ class FindWordsEnterViewModel {
     }
 
     private fun solve() {
-
+        val uiState = uiStateFlow.value
+        openSolveScreen(
+            FindWordsSolutionParameters(
+                dictionary = uiState.dictionary,
+                minWordLength = uiState.minWordLength,
+                maxWordLength = uiState.maxWordLength,
+                fullMatch = uiState.fullMatch,
+                lettersGrid = uiState.lettersGrid
+            )
+        )
     }
 
     private fun decrementRows() {
