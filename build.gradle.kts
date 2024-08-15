@@ -4,6 +4,7 @@ plugins {
     alias(libs.plugins.kotlin.jvm)
     alias(libs.plugins.jetbrains.compose)
     alias(libs.plugins.compose.compiler)
+    alias(libs.plugins.kotlinx.serialization)
 }
 
 repositories {
@@ -16,11 +17,19 @@ dependencies {
     implementation(project(":core"))
 
     implementation(compose.desktop.currentOs)
+    implementation(compose.material3)
+    implementation(compose.materialIconsExtended)
+
+    implementation(libs.kotlinx.coroutines)
+    implementation(libs.kotlinx.coroutines.swing)
+
+    implementation(libs.decompose)
+    implementation(libs.decompose.compose)
 }
 
 compose.desktop {
     application {
-        mainClass = "com.epicdima.findwords.MainKt"
+        mainClass = "com.epicdima.findwords.FindWordsMainKt"
 
         nativeDistributions {
             targetFormats(TargetFormat.Dmg)

@@ -1,88 +1,44 @@
 package com.epicdima.findwords
 
+import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.systemBars
+import androidx.compose.foundation.layout.windowInsetsPadding
+import androidx.compose.material.MaterialTheme
+import androidx.compose.material.Surface
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
-import com.epicdima.findwords.base.ViewModel
-import com.epicdima.findwords.common.FindWordsSolutionParameters
-import com.epicdima.findwords.common.FindWordsSolutionResult
+import androidx.compose.ui.Modifier
+import com.arkivanov.decompose.extensions.compose.stack.Children
+import com.arkivanov.decompose.extensions.compose.stack.animation.fade
+import com.arkivanov.decompose.extensions.compose.stack.animation.plus
+import com.arkivanov.decompose.extensions.compose.stack.animation.scale
+import com.arkivanov.decompose.extensions.compose.stack.animation.stackAnimation
+import com.arkivanov.decompose.extensions.compose.subscribeAsState
 import com.epicdima.findwords.enter.FindWordsEnterScreen
-import com.epicdima.findwords.enter.FindWordsEnterViewModel
 import com.epicdima.findwords.solution.FindWordsSolutionScreen
-import com.epicdima.findwords.solution.FindWordsSolutionViewModel
 import com.epicdima.findwords.solve.FindWordsSolveScreen
-import com.epicdima.findwords.solve.FindWordsSolveViewModel
-import com.epicdima.findwords.start.FindWordsStartScreen
 
 @Composable
-fun FindWordsApp(exit: () -> Unit) {
-    var currentScreen: FindWordsScreen by remember { mutableStateOf(FindWordsScreen.Start) }
-    var currentViewModel: ViewModel? = null
-    when (val screen = currentScreen) {
-        FindWordsScreen.Start -> {
-            currentViewModel = null
-            FindWordsStartScreen(
-                goBack = exit,
-                openEnterScreen = {
-                    currentScreen = FindWordsScreen.Enter
-                }
-            )
-        }
-        FindWordsScreen.Enter -> {
+fun FindWordsApp(rootComponent: FindWordsRootComponent, modifier: Modifier = Modifier) {
+    MaterialTheme {
+        Surface(modifier = modifier.fillMaxSize().windowInsetsPadding(WindowInsets.systemBars)) {
+            val state = rootComponent.stack.subscribeAsState()
+            Children(
+                stack = state.value,
+                modifier = Modifier.fillMaxSize(),
+                animation = stackAnimation(fade() + scale()),
+            ) {
+                when (val instance = it.instance) {
+                    is FindWordsRootComponent.Child.EnterChild ->
+                        FindWordsEnterScreen(component = instance.component)
 
-            FindWordsEnterScreen(
-                FindWordsEnterViewModel(
-                    openSolveScreen = {
-                        currentViewModel?.onCleared()
-                        currentScreen = FindWordsScreen.Solve(it)
-                    }
-                ).also {
-                    currentViewModel = it
+                    is FindWordsRootComponent.Child.SolveChild ->
+                        FindWordsSolveScreen(component = instance.component)
+
+                    is FindWordsRootComponent.Child.SolutionChild ->
+                        FindWordsSolutionScreen(component = instance.component)
                 }
-            )
-        }
-        is FindWordsScreen.Solve -> {
-            FindWordsSolveScreen(
-                FindWordsSolveViewModel(
-                    parameters = screen.parameters,
-                    openSolutionScreen = {
-                        currentViewModel?.onCleared()
-                        currentScreen = FindWordsScreen.Solution(it)
-                    }
-                ).also {
-                    currentViewModel = it
-                }
-            )
-        }
-        is FindWordsScreen.Solution -> {
-            FindWordsSolutionScreen(
-                FindWordsSolutionViewModel(
-                    result = screen.result,
-                    openStartScreen = {
-                        currentViewModel?.onCleared()
-                        currentScreen = FindWordsScreen.Start
-                    }
-                ).also {
-                    currentViewModel = it
-                }
-            )
+            }
         }
     }
-}
-
-private sealed interface FindWordsScreen {
-
-    data object Start : FindWordsScreen
-
-    data object Enter : FindWordsScreen
-
-    data class Solve(
-        val parameters: FindWordsSolutionParameters
-    ) : FindWordsScreen
-
-    data class Solution(
-        val result: FindWordsSolutionResult
-    ) : FindWordsScreen
 }

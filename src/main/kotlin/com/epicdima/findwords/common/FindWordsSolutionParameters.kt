@@ -5,5 +5,5 @@ data class FindWordsSolutionParameters(
     val minWordLength: Int,
     val maxWordLength: Int,
     val fullMatch: Boolean,
-    val lettersGrid: List<List<Char>>
+    val lettersGrid: List<List<Char>>,
 )
